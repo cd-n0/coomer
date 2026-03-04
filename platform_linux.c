@@ -350,13 +350,22 @@ void platform_pump_messages(void) {
                     (kr->state & ShiftMask)
                 );
 
+                b8 press = kr->response_type == XCB_KEY_PRESS;
+
                 switch(key_sym) {
                     case XK_q:
                     case XK_Q: {
-                    input_process_key(KEYBOARD_KEY_Q, kr->response_type == XCB_KEY_PRESS);
+                        input_process_key(KEYBOARD_KEY_Q, press);
                     } break;
                     case XK_Escape: {
-                    input_process_key(KEYBOARD_KEY_ESC, kr->response_type == XCB_KEY_PRESS);
+                        input_process_key(KEYBOARD_KEY_ESC, press);
+                    } break;
+                    case XK_f:
+                    case XK_F: {
+                        input_process_key(KEYBOARD_KEY_F, press);
+                    } break;
+                    case XK_Control_L: {
+                        input_process_key(KEYBOARD_KEY_LCTRL, press);
                     } break;
                     default: break;
                 }

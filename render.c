@@ -189,31 +189,59 @@ void render_deinitialize(void) {
 #define LERP_DECAY 10.f
 #endif
 
-void render_draw(void) {
-    static camera_t camera_state = {.scale = 1.f};
-    static f64 last_elapsed = 0;
-    cd_clock_update(&render_clock);
-    f64 dt = render_clock.elapsed - last_elapsed;
-    last_elapsed = render_clock.elapsed;
-    /* printf("dt:%lf, FPS:%lf\n", dt, 1/dt); */
-    camera_state.position.x = lerp(camera_state.position.x, camera.position.x, LERP_DECAY, dt);
-    camera_state.position.y = lerp(camera_state.position.y, camera.position.y, LERP_DECAY, dt);
-    camera_state.scale = lerp(camera_state.scale, camera.scale, LERP_DECAY, dt);
+#ifndef FLASHLIGHT_SHADOW_AMOUNT
+#define FLASHLIGHT_SHADOW_AMOUNT 0.8f
+#endif
 
-    glClearColor(0.1, 0.1, 0.1, 1.0);
+typedef struct {
+    camera_t camera_state;
+    float flashlight_radius;
+} render_state_t;
+
+static render_state_t render_state = {
+    .camera_state = {.scale = 1.f},
+    .flashlight_radius = 0.f,
+};
+
+void render_update(void) {
+    static double last_elapsed = 0.0;
+    cd_clock_update(&render_clock);
+    double dt = render_clock.elapsed - last_elapsed;
+    /* printf("dt:%lf, FPS:%lf\n", dt, 1/dt); */
+
+    last_elapsed = render_clock.elapsed;
+
+    render_state.camera_state.position.x = lerp(render_state.camera_state.position.x, camera.position.x, LERP_DECAY, dt);
+    render_state.camera_state.position.y = lerp(render_state.camera_state.position.y, camera.position.y, LERP_DECAY, dt);
+    render_state.camera_state.scale = lerp(render_state.camera_state.scale, camera.scale, LERP_DECAY, dt);
+    render_state.flashlight_radius = lerp(render_state.flashlight_radius, flashlight.radius, LERP_DECAY, dt);
+
+    if (flashlight.is_enabled) {
+        flashlight.shadow = lerp(flashlight.shadow, FLASHLIGHT_SHADOW_AMOUNT, LERP_DECAY, dt);
+    } else {
+        flashlight.shadow = lerp(flashlight.shadow, 0.0f, LERP_DECAY, dt);
+    }
+}
+
+
+void render_draw(void) {
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glUniform2f(glGetUniformLocation(shader, "cameraPos"), camera_state.position.x,
-                camera_state.position.y);
-    glUniform1f(glGetUniformLocation(shader, "cameraScale"), camera_state.scale);
-    glUniform2f(glGetUniformLocation(shader, "screenshotSize"), image.width,
-                image.height);
-    glUniform2f(glGetUniformLocation(shader, "windowSize"), window_size.width,
-                window_size.height);
-    glUniform2f(glGetUniformLocation(shader, "cursorPos"), mouse_position.x,
-                mouse_position.y);
-    //glUniform1f(glGetUniformLocation(shader, "flShadow"), flash_light.shadow);
-    //glUniform1f(glGetUniformLocation(shader, "flRadius"), flash_light.radius);
+    glUniform2f(glGetUniformLocation(shader, "cameraPos"),
+                render_state.camera_state.position.x,
+                render_state.camera_state.position.y);
+    glUniform1f(glGetUniformLocation(shader, "cameraScale"),
+                render_state.camera_state.scale);
+    glUniform2f(glGetUniformLocation(shader, "screenshotSize"),
+                image.width, image.height);
+    glUniform2f(glGetUniformLocation(shader, "windowSize"),
+                window_size.width, window_size.height);
+    glUniform2f(glGetUniformLocation(shader, "cursorPos"),
+                mouse_position.x, mouse_position.y);
+    glUniform1f(glGetUniformLocation(shader, "flShadow"), flashlight.shadow);
+    glUniform1f(glGetUniformLocation(shader, "flRadius"), render_state.flashlight_radius);
+
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
     platform_gl_swap_buffers();
 }

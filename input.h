@@ -14,7 +14,9 @@ typedef enum mouse_button_e {
 
 typedef enum keyboard_key_e {
     KEYBOARD_KEY_Q,
-    KEYBOARD_KEY_ESC
+    KEYBOARD_KEY_ESC,
+    KEYBOARD_KEY_F,
+    KEYBOARD_KEY_LCTRL
 } keyboard_key_t;
 
 void input_process_button(mouse_button_t button, b8 press);

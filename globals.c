@@ -8,3 +8,4 @@ frame_t image;
 frame_t window_size;
 point_t mouse_position;
 b8 running = true;
+flashlight_t flashlight = {.radius = 250.f};

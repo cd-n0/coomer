@@ -13,10 +13,20 @@ void input_process_button(mouse_button_t button, b8 press) {
         } break;
         /* TODO: Clamp values */
         case MOUSE_BUTTON_SCROLL_UP: {
-            camera.scale += ZOOM_AMOUNT * camera.scale;
+            if(flashlight.is_enabled && flashlight.is_resizing && press) {
+                flashlight.radius += ZOOM_AMOUNT * flashlight.radius;
+            }
+            else if (press) {
+                camera.scale += ZOOM_AMOUNT * camera.scale;
+            }
         } break;
         case MOUSE_BUTTON_SCROLL_DOWN: {
-            camera.scale -= ZOOM_AMOUNT * camera.scale;
+            if(flashlight.is_enabled && flashlight.is_resizing && press) {
+                flashlight.radius -= ZOOM_AMOUNT * flashlight.radius;
+            }
+            else if (press) {
+                camera.scale -= ZOOM_AMOUNT * camera.scale;
+            }
         } break;
         default: break;
     }
@@ -40,6 +50,13 @@ void input_process_key(keyboard_key_t key, b8 press) {
         case KEYBOARD_KEY_Q:
         case KEYBOARD_KEY_ESC: {
             running = false;
+        } break;
+        case KEYBOARD_KEY_F: {
+            if (press)
+            flashlight.is_enabled = !flashlight.is_enabled;
+        } break;
+        case KEYBOARD_KEY_LCTRL: {
+            flashlight.is_resizing = press ? true : false;
         } break;
 
         default: break;

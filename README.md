@@ -9,7 +9,7 @@ sh build.sh -O3
 
 # TODO
 - [ ] Windows support
-- [ ] Flashlight
+- [x] Flashlight
 - [ ] Parse args
 - [ ] Help
 - [ ] Tidy up project structure
