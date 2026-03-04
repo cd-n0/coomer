@@ -211,6 +211,7 @@ void render_update(void) {
 
     last_elapsed = render_clock.elapsed;
 
+    #ifndef NO_SMOOTHING
     render_state.camera_state.position.x = lerp(render_state.camera_state.position.x, camera.position.x, LERP_DECAY, dt);
     render_state.camera_state.position.y = lerp(render_state.camera_state.position.y, camera.position.y, LERP_DECAY, dt);
     render_state.camera_state.scale = lerp(render_state.camera_state.scale, camera.scale, LERP_DECAY, dt);
@@ -221,6 +222,18 @@ void render_update(void) {
     } else {
         flashlight.shadow = lerp(flashlight.shadow, 0.0f, LERP_DECAY, dt);
     }
+    #else
+    render_state.camera_state.position.x = camera.position.x;
+    render_state.camera_state.position.y = camera.position.y;
+    render_state.camera_state.scale = camera.scale;
+    render_state.flashlight_radius = flashlight.radius;
+
+    if (flashlight.is_enabled) {
+        flashlight.shadow = FLASHLIGHT_SHADOW_AMOUNT;
+    } else {
+        flashlight.shadow = 0.f;
+    }
+    #endif
 }
 
 
