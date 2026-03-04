@@ -9,6 +9,7 @@ sh build.sh -O3
 
 # TODO
 - [ ] Windows support
+- [ ] Wayland support
 - [x] Flashlight
 - [ ] Parse args
 - [ ] Help
