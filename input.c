@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #ifndef ZOOM_AMOUNT
-#define ZOOM_AMOUNT 0.05f
+#define ZOOM_AMOUNT 0.2f
 #endif
 
 void input_process_button(mouse_button_t button, b8 press) {
@@ -31,7 +31,13 @@ void input_process_button(mouse_button_t button, b8 press) {
                 flashlight.radius -= ZOOM_AMOUNT * flashlight.radius;
             }
             else if (press) {
+                f32 x1 = (mouse_position.x - window_size.width / 2) / camera.scale;
+                f32 y1 = (mouse_position.y - window_size.height / 2) / camera.scale;
                 camera.scale -= ZOOM_AMOUNT * camera.scale;
+                f32 x2 = (mouse_position.x - window_size.width / 2) / camera.scale;
+                f32 y2 = (mouse_position.y - window_size.height / 2) / camera.scale;
+                camera.position.x += x1 - x2;
+                camera.position.y += y1 - y2;
             }
         } break;
         default: break;
