@@ -1,0 +1,9 @@
+# Build artifacts
+coomer
+
+# Tags
+tags
+
+# clangd
+compile_commands.json
+.cache/
