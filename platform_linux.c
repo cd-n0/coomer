@@ -32,6 +32,8 @@ typedef struct platform_state_s {
     xcb_window_t window;
     xcb_atom_t wm_protocols;
     xcb_atom_t wm_delete_win;
+    xcb_window_t server_last_focus_window;
+    uint8_t server_revert_to;
 } platform_state_t;
 
 xcb_get_image_reply_t *image_reply;
@@ -285,15 +287,18 @@ b8 platform_initialize(const char *window_name, b8 windowed) {
 
     xcb_get_input_focus_cookie_t input_focus_cookie = xcb_get_input_focus(platform_state.connection);
     xcb_get_input_focus_reply_t *input_focus_reply = xcb_get_input_focus_reply(platform_state.connection, input_focus_cookie, NULL);
-    xcb_set_input_focus(platform_state.connection, input_focus_reply->revert_to, platform_state.window, XCB_CURRENT_TIME);
+    platform_state.server_last_focus_window = input_focus_reply->focus;
+    platform_state.server_revert_to = input_focus_reply->revert_to;
     free(input_focus_reply);
+    xcb_set_input_focus(platform_state.connection, platform_state.server_revert_to, platform_state.window, XCB_CURRENT_TIME);
 
     return true;
 }
 
 void platform_deinitialize(void) {
-    glXDestroyWindow(platform_state.display, platform_state.glx_window);
+    xcb_set_input_focus(platform_state.connection, platform_state.server_revert_to, platform_state.server_last_focus_window, XCB_CURRENT_TIME);
 
+    glXDestroyWindow(platform_state.display, platform_state.glx_window);
     xcb_destroy_window(platform_state.connection, platform_state.window);
 
     glXDestroyContext(platform_state.display, platform_state.context);
