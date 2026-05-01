@@ -22,8 +22,8 @@ void input_process_button(mouse_button_t button, b8 press) {
                 camera.scale += ZOOM_AMOUNT * camera.scale;
                 f32 x2 = (mouse_position.x - window_size.width / 2) / camera.scale;
                 f32 y2 = (mouse_position.y - window_size.height / 2) / camera.scale;
-                camera.position.x += x1 - x2;
-                camera.position.y += y1 - y2;
+                camera.position.x -= x2 - x1;
+                camera.position.y -= y2 - y1;
             }
         } break;
         case MOUSE_BUTTON_SCROLL_DOWN: {
@@ -36,8 +36,8 @@ void input_process_button(mouse_button_t button, b8 press) {
                 camera.scale -= ZOOM_AMOUNT * camera.scale;
                 f32 x2 = (mouse_position.x - window_size.width / 2) / camera.scale;
                 f32 y2 = (mouse_position.y - window_size.height / 2) / camera.scale;
-                camera.position.x += x1 - x2;
-                camera.position.y += y1 - y2;
+                camera.position.x -= x2 - x1;
+                camera.position.y -= y2 - y1;
             }
         } break;
         default: break;
